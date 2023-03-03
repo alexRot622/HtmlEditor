@@ -1,0 +1,99 @@
+Rotaru Petru-Alexandru, 311CB
+
+structura proiectului:
+├── main.c -> contine functia main si implementarea
+|			  functionalitatilor programului
+├── lib.h -> contine definitia principalelor structuri de date folosite
+├── list.c, list.h -> contin definitia tipului de lista simplu inlantuita
+|                     si functiile folosite pentru utilizarea listelor
+├── stack.c, stack.h -> contin definitia tipului de stiva generica si
+|                       functiile folosite pentru utilizarea stivelor
+├── attr.c, attr.h -> contin definitiile functiilor care prelucreaza
+|                     atribute si liste de atribute
+├── cmds.c, cmds.h -> contin definitiile functiilor folosite pentru
+|                     implementarea comenzilor citite din input
+├── tree.c, tree.h -> contin definitiile funcitilor folosite pentru
+|                     prelucrarea arborelui.
+├── selector.c, selector.h -> contin definitiile functiilor folosite pentru
+|                             selectarea unor noduri din arbore
+└── utils.c, utils.h -> contin definitiile functiilor utilitare folosite.
+
+general:
+	- Am scris codul cu tab size = 4.
+    - Pentru evaluarea comenzilor, am scris o bucla in care citesc o linie din
+      fisierul de input, elimin caracterul newline de la final, apoi apelez
+      functia corespunzatoare pe care o gasesc in structura functions din main.
+    - Bucla se opreste cand se ajunge la finalul fisierului de intrare.
+    - Am ales sa folosesc o implementare a listelor si a stivelor asemanatoare
+      cu pe care am folosit-o la tema 2, dar am ales sa retin in ele doar
+      data pentru care alocarea memoriei se face in exteriorul functiilor
+      pentru aceste structuri pentru a putea lucra mai usor cu adresele
+      nodurilor din arbore.
+    - Am ales sa fac parcurgerile arborelui in adancime (cu exceptia parcurgerii
+      in functie de ID).
+    - Am ales sa adaug un camp "parent" la structura de tree pentru a obtine
+      mai usor tatal unui nod.
+    - Comenzile care se aplica asupra arborelui primesc ca parametri un arbore
+      si un void*, pentru a generaliza apelarea lor. Pentru functia de afisare,
+      al doilea parametru este doar adresa unui fisier de output, iar pentru
+      restul, ea este adresa unei liste de atribute, unde primul atribut
+      este numele functiei si are ca valoare adresa fisierului de output,
+      iar atributelor sunt formate din argumentele date functiei.
+    - Am folosit un state machine asemenator cu cel dat ca exemplu pentru
+      interpretarea comenzilor si selectorilor.
+    - In listele in care nu a contat ordinea elementelor, am folosit
+      adaugarea pe prima pozitie din lista pentru eficienta.
+
+Citirea unui fisier HTML:
+    - Pentru a interpreta un fisier HTML, folosesc functia interpret care
+      primeste o stiva de arbori, adresa unui atribut, state-ul curent si un
+      caracter. Citirea se face caracter cu caracter.
+    - Stiva este necesara in implementarea mea pentru a retine arborii intr-o
+      ordine care usureaza crearea legaturilor tata-fiu: fiul va fi mereu
+      deasupra tatalui in stiva.
+    - Atributul este folosit pentru a retine numele si valorile intermediare
+      ale unui nou atribut intre apeluri diferite ale functiei de interpretare.
+    - La finalul interpretarii, adresa arborelui este ultima adresa ramasa in
+      stiva.
+    - Abordarea pentru interpretarea codului HTML dintr-un string este similara.
+
+Comenzi:
+FORMAT:
+    - Aceasta este implementata prin functia "print_tree" din tree.h. Pentru
+      fiecare nod obtin nivelul folosind numarul de puncte din ID, apoi
+      afisez numarul de caractere '\t' corespunzator. Apoi, afisez
+      tipul nodului, atributele sale si fac afisarea continutului
+      in functie de valoarea 'tree->info->selfClosing'. Apoi, parcurg
+      fii sai si apelez pentru fiecare din ei functia de afisare, si
+      inchid tagul luand din nou in considerare daca el este self-closing
+      sau nu.
+ADD_TAG:
+    - Obtin ID-ul si noul tag din arglist, apoi caut viitorul parinte
+      folosind id-ul in arbore. Daca nu este gasit nodul cu ID-ul dat,
+      afisez un mesaj de eroare. Altfel, interpretez noul tag si il
+      adaug ca fiu nodului parinte selectat.
+DELETE_RECURSIVELY:
+    - Obtin selectorul, apoi il folosesc pentru a obtine nodurile
+      selectate. Daca s-au gasit noduri selectate, parcurg lista
+      de noduri si pentru fiecare obtin parintele, refac legaturile
+      intre noduri inainte de stergere si apelez functia de free pe
+      arbore, apoi actualizez ID-ul fratilor nodului sters.
+    - Actualizarea ID-ului copiaza ID-ul ultimului nod parcurs
+      peste ID-ul nodului care se prelucreaza acum sau peste inceputul
+      acestuia, daca nodul la care s-a ajuns este format din mai multe
+      coduri decat nodul de la care am pornit.
+OVERRIDE_STYLE:
+    - Obtin selectorul si lista de atribute style. Folosesc
+      selectorul pentru obtinerea listei de noduri. Pentru fiecare
+      nod selectat, apelez functia de override care elibereza
+      vechea lista de atribute style si copiaza noua lista.
+APPEND_STYLE:
+    - Obtin selectorul si lista de atribute style. Folosesc
+      selectorul pentru obtinerea listei de noduri. Pentru fiecare
+      nod selectat, apelez functia de append care adauga atributele
+      noi la lista si inlocuieste valorile celor care existau deja
+      in lista din nod.
+
+Punctaj checker local:
+Punctaj total 85.0/85.0
+Punctaj valgrind 20.0/20.0
